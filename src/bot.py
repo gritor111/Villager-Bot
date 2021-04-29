@@ -91,7 +91,7 @@ def mutate_botd(_bot):
     d.fun_langs.unenchant = {v: k for k, v in d.fun_langs.enchant.items()}  # reverse dict to create unenchantment lang
 
 
-def run():
+def run(shard_id: int, shard_count: int):
     # setup uvloop
     uvloop.install()
 
@@ -102,11 +102,13 @@ def run():
     with open("data/keys.json", "r") as k:  # load bot keys
         keys = ClassyDict(json.load(k))
 
-    bot = commands.AutoShardedBot(  # setup bot
+    bot = commands.Bot(  # setup bot
         command_prefix=get_prefix,
         case_insensitive=True,
         intents=villager_bot_intents(),
         help_command=None,
+        shard_id=shard_id,
+        shard_count=shard_count,
     )
 
     bot.logger = logger
