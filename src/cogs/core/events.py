@@ -19,7 +19,7 @@ class Events(commands.Cog):
 
     @commands.Cog.listener()
     async def on_ready(self):
-        self.bot.logger.info(f"\u001b[36;1mCONNECTED\u001b[0m [{self.bot.shard_count} Shards] [{len(self.bot.cogs)} Cogs]")
+        self.bot.logger.info(f"\u001b[36;1mCONNECTED\u001b[0m [Shard {self.bot.shard_id}] [{len(self.bot.cogs)} Cogs]")
 
     @commands.Cog.listener()
     async def on_guild_join(self, guild):
