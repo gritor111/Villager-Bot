@@ -96,7 +96,7 @@ def run(shard_id: int, shard_count: int):
     uvloop.install()
 
     # set up basic logging
-    logger = setup_logging()
+    logger = setup_logging(shard_id)
 
     logger.info("loading private keys...")
     with open("data/keys.json", "r") as k:  # load bot keys
