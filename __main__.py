@@ -8,7 +8,7 @@ pyximport.install(language_level=3, reload_support=True, setup_args={"include_di
 import src.bot as bot
 
 if __name__ == "__main__":
-    shard_count = 5
+    shard_count = 2
     processes = []
 
     with ProcessPoolExecutor() as ppool:
