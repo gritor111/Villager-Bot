@@ -15,4 +15,7 @@ if __name__ == "__main__":
         for shard_id in range(shard_count):
             processes.append(ppool.submit(partial(bot.run, shard_id, shard_count)))
 
-    wait(processes)
+        try:
+            wait(processes)
+        except KeyboardInterrupt:
+            ppool.shutdown()
