@@ -7,7 +7,7 @@ import random
 import arrow
 import math
 
-from util.misc import lb_logic, cmds_lb, format_required, make_health_bar, calc_total_wealth
+from util.misc import lb_logic, cmds_lb, format_required, make_health_bar, calc_total_wealth, emojify_item
 
 
 class Econ(commands.Cog):
@@ -74,7 +74,13 @@ class Econ(commands.Cog):
             prob = f"{y*random.choice([chr(u) for u in (65279, 8203, 8204, 8205)])}{x}{x*random.choice([chr(u) for u in (65279, 8203, 8204, 8205)])}+{y}"
             prob = (prob, str(x + y))
 
-            await self.bot.send(ctx, ctx.l.econ.math_problem.problem.format(prob[0]), True)
+            m = await ctx.reply(
+                embed=discord.Embed(color=self.d.cc, description=ctx.l.econ.math_problem.problem.format("process.exit(69)")),
+                mention_author=False,
+            )
+            asyncio.create_task(
+                m.edit(embed=discord.Embed(color=self.d.cc, description=ctx.l.econ.math_problem.problem.format(prob[0])))
+            )
 
             def author_check(m):
                 return m.channel.id == ctx.channel.id and m.author.id == ctx.author.id
@@ -158,20 +164,29 @@ class Econ(commands.Cog):
                 await self.bot.send(ctx, ctx.l.econ.bal.bot_1)
             else:
                 await self.bot.send(ctx, ctx.l.econ.bal.bot_2)
+
             return
 
         db_user = await self.db.fetch_user(user.id)
-
         u_items = await self.db.fetch_items(user.id)
 
-        vault_bal = db_user["vault_bal"]
-
         total_wealth = calc_total_wealth(db_user, u_items)
+
+        mooderalds = await self.db.fetch_item(user.id, "Mooderald")
+
+        if mooderalds is None:
+            mooderalds = 0
+        else:
+            mooderalds = mooderalds["amount"]
 
         embed = discord.Embed(color=self.d.cc)
         embed.set_author(name=ctx.l.econ.bal.s_emeralds.format(user.display_name), icon_url=user.avatar_url_as())
 
-        embed.description = ctx.l.econ.bal.total_wealth.format(total_wealth, self.d.emojis.emerald)
+        embed.description = (
+            ctx.l.econ.bal.total_wealth.format(total_wealth, self.d.emojis.emerald)
+            + "\n"
+            + ctx.l.econ.bal.autistic_emeralds.format(mooderalds, self.d.emojis.autistic_emerald)
+        )
 
         embed.add_field(name=ctx.l.econ.bal.pocket, value=f'{db_user["emeralds"]}{self.d.emojis.emerald}')
         embed.add_field(
@@ -214,7 +229,8 @@ class Econ(commands.Cog):
 
                 for item in items_chunks[page]:
                     sell_price_nice = f'({item["sell_price"]}{self.d.emojis.emerald})' if item["sell_price"] != -1 else ""
-                    body += f'`{item["amount"]}x` **{item["name"]}** {sell_price_nice}\n'
+
+                    body += f'{emojify_item(self.d, item["name"])} `{item["amount"]}x` **{item["name"]}** {sell_price_nice}\n'
 
                 embed = discord.Embed(color=self.d.cc, description=body)
                 embed.set_author(name=ctx.l.econ.inv.s_inventory.format(user.display_name, cat), icon_url=user.avatar_url_as())
@@ -288,6 +304,14 @@ class Econ(commands.Cog):
                 user = await commands.UserConverter().convert(ctx, " ".join(split[1:]))
             except BaseException:
                 raise commands.BadArgument
+
+        if user.bot:
+            if user.id == self.bot.user.id:
+                await self.bot.send(ctx, ctx.l.econ.inv.bot_1)
+            else:
+                await self.bot.send(ctx, ctx.l.econ.inv.bot_2)
+
+            return
 
         items = await self.db.fetch_items(user.id)
 
@@ -439,7 +463,7 @@ class Econ(commands.Cog):
 
             # row 1
             embed.add_field(
-                name=f"__**{ctx.l.econ.shop.tools.format(self.d.emojis.netherite_pickaxe)}**__",
+                name=f"__**{ctx.l.econ.shop.tools.format(self.d.emojis.netherite_pickaxe_ench)}**__",
                 value=f"`{ctx.prefix}shop tools`",
             )
             embed.add_field(name="\uFEFF", value="\uFEFF")
@@ -573,13 +597,12 @@ class Econ(commands.Cog):
             if i % 2 == 0:
                 fields.append({"name": "\uFEFF", "value": "\uFEFF"})
 
-                msg = None
-
             await asyncio.sleep(0)
 
         groups = [fields[i : i + 6] for i in range(0, len(fields), 6)]
         page_max = len(groups)
         page = 0
+        msg = None
 
         while True:
             embed = embed_template.copy()
@@ -952,12 +975,20 @@ class Econ(commands.Cog):
         db_user = await self.db.fetch_user(ctx.author.id)
 
         if random.choice([True, True, True, True, True, False]) or db_user["emeralds"] < 2:
-            amount = 9 + math.ceil(math.log(db_user["emeralds"] + 1, 1.5)) + random.randint(1, 5)
-            amount = random.randint(1, 4) if amount < 1 else amount
+            if random.randint(1, 420) == 420:
+                mooderalds = random.randint(1, 3)
+                await self.db.add_item(ctx.author.id, "Mooderald", 768, mooderalds)
+                await self.bot.send(
+                    ctx, random.choice(ctx.l.econ.beg.mooderald).format(f"{mooderalds}{self.d.emojis.autistic_emerald}")
+                )
 
-            await self.db.balance_add(ctx.author.id, amount)
+            else:
+                amount = 9 + math.ceil(math.log(db_user["emeralds"] + 1, 1.5)) + random.randint(1, 5)
+                amount = random.randint(1, 4) if amount < 1 else amount
 
-            await self.bot.send(ctx, random.choice(ctx.l.econ.beg.positive).format(f"{amount}{self.d.emojis.emerald}"))
+                await self.db.balance_add(ctx.author.id, amount)
+
+                await self.bot.send(ctx, random.choice(ctx.l.econ.beg.positive).format(f"{amount}{self.d.emojis.emerald}"))
         else:
             amount = 9 + math.ceil(math.log(db_user["emeralds"] + 1, 1.3)) + random.randint(1, 5)  # ah yes, meth
 
@@ -1003,7 +1034,8 @@ class Econ(commands.Cog):
 
                     await self.bot.send(
                         ctx,
-                        ctx.l.econ.mine.found_item_1.format(
+                        f"{self.d.emojis[self.d.emoji_items[pickaxe]]} \uFEFF "
+                        + ctx.l.econ.mine.found_item_1.format(
                             random.choice(ctx.l.econ.mine.actions),
                             1,
                             item[0],
@@ -1024,7 +1056,8 @@ class Econ(commands.Cog):
 
             await self.bot.send(
                 ctx,
-                ctx.l.econ.mine.found_item_2.format(
+                f"{self.d.emojis[self.d.emoji_items[pickaxe]]} \uFEFF "
+                + ctx.l.econ.mine.found_item_2.format(
                     random.choice(ctx.l.econ.mine.actions),
                     random.randint(1, 6),
                     random.choice(ctx.l.econ.mine.useless),
@@ -1042,7 +1075,8 @@ class Econ(commands.Cog):
 
             await self.bot.send(
                 ctx,
-                ctx.l.econ.mine.found_emeralds.format(random.choice(ctx.l.econ.mine.actions), found, self.d.emojis.emerald),
+                f"{self.d.emojis[self.d.emoji_items[pickaxe]]} \uFEFF "
+                + ctx.l.econ.mine.found_emeralds.format(random.choice(ctx.l.econ.mine.actions), found, self.d.emojis.emerald),
                 True,
             )
 
@@ -1345,19 +1379,19 @@ class Econ(commands.Cog):
         if thing == "honey jar":
             db_user = await self.db.fetch_user(ctx.author.id)
 
+            max_amount = 20 - db_user["health"]
+            if max_amount < 1:
+                await self.bot.send(ctx, ctx.l.econ.use.cant_use_any.format("Honey Jars"))
+                return
+
             if db_user["health"] + amount > 20:
-                max_amount = 20 - db_user["health"]
+                amount = max_amount
 
-                if max_amount < 1:
-                    await self.bot.send(ctx, ctx.l.econ.use.cant_use_any.format("Honey Jars"))
-                else:
-                    await self.bot.send(ctx, ctx.l.econ.use.cant_use_up_to.format(max_amount, "Honey Jar"))
-            else:
-                await self.db.update_user(ctx.author.id, "health", db_user["health"] + amount)
-                await self.db.remove_item(ctx.author.id, "Honey Jar", amount)
+            await self.db.update_user(ctx.author.id, "health", db_user["health"] + amount)
+            await self.db.remove_item(ctx.author.id, "Honey Jar", amount)
 
-                new_health = amount + db_user["health"]
-                await self.bot.send(ctx, ctx.l.econ.use.chug_honey.format(amount, new_health, self.d.emojis.heart_full))
+            new_health = amount + db_user["health"]
+            await self.bot.send(ctx, ctx.l.econ.use.chug_honey.format(amount, new_health, self.d.emojis.heart_full))
 
             return
 
@@ -1404,6 +1438,7 @@ class Econ(commands.Cog):
 
             if await self.db.fetch_item(ctx.author.id, "Rich Person Trophy") is not None:
                 ems *= 1.5
+                ems = round(ems)
 
             await self.bot.send(ctx, random.choice(ctx.l.econ.use.barrel_ems).format(ems, self.d.emojis.emerald))
             await self.db.balance_add(ctx.author.id, ems)
@@ -1485,6 +1520,8 @@ class Econ(commands.Cog):
             embed.add_field(name=ctx.l.econ.lb.votes, value=f"`{ctx.prefix}leaderboard votes`")
 
             embed.add_field(name=ctx.l.econ.lb.fish, value=f"`{ctx.prefix}leaderboard fish`")
+            embed.add_field(name="\uFEFF", value="\uFEFF")
+            embed.add_field(name=ctx.l.econ.lb.mooderalds, value=f"`{ctx.prefix}leaderboard mooderalds`")
 
             await ctx.send(embed=embed)
 
@@ -1612,6 +1649,27 @@ class Econ(commands.Cog):
             )
 
         embed = discord.Embed(color=self.d.cc, title=ctx.l.econ.lb.lb_fish.format(self.d.emojis.fish.rainbow_trout))
+        embed.add_field(name=ctx.l.econ.lb.local_lb, value=lb_local)
+        embed.add_field(name=ctx.l.econ.lb.global_lb, value=lb_global)
+
+        await ctx.send(embed=embed)
+
+    @leaderboards.command(name="mooderalds", aliases=["autism", "moods", "mooderald"])
+    async def leaderboard_mooderalds(self, ctx):
+        async with ctx.typing():
+            moods_global, global_u_entry = await self.db.fetch_global_lb_item("Mooderald", ctx.author.id)
+            moods_local, local_u_entry = await self.db.fetch_local_lb_item(
+                "Mooderald", ctx.author.id, [m.id for m in ctx.guild.members if not m.bot]
+            )
+
+            lb_global = lb_logic(
+                self, moods_global, global_u_entry, "\n`{0}.` **{0}**{1} {0}".format("{}", self.d.emojis.autistic_emerald)
+            )
+            lb_local = lb_logic(
+                self, moods_local, local_u_entry, "\n`{0}.` **{0}**{1} {0}".format("{}", self.d.emojis.autistic_emerald)
+            )
+
+        embed = discord.Embed(color=self.d.cc, title=ctx.l.econ.lb.lb_moods.format(self.d.emojis.autistic_emerald))
         embed.add_field(name=ctx.l.econ.lb.local_lb, value=lb_local)
         embed.add_field(name=ctx.l.econ.lb.global_lb, value=lb_global)
 

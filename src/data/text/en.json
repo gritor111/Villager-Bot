@@ -107,7 +107,8 @@
         "google": "`{0}google <search>` *searches on google for your query*",
         "youtube": "`{0}youtube <search>` *searches on youtube for your query*",
         "image": "`{0}image <search>` *searches google images for your query*",
-        "remindme": "`{0}remindme <time> <reminder>` *reminds you in a specified time*"
+        "remindme": "`{0}remindme <time> <reminder>` *reminds you in a specified time*",
+        "credits": "`{0}credits` *shows who helped make Villager Bot*"
       },
       "fun": {
         "cursed": "`{0}cursed` *sends a random cursed Minecraft image*",
@@ -570,6 +571,24 @@
         "time_max": "You cannot set a reminder more than eight weeks in advance.",
         "remind": "{0} reminding you {1}.",
         "reminder": "{0}, you wanted me to remind you: *{1}*"
+      },
+      "credits": {
+        "credits": "Villager Bot wouldn't be possible without...",
+        "foot": "Made by Iapetus11 and others ({0}credits)",
+        "people": {
+          "iapetus11": "The creator, owner, and developer of Villager Bot",
+          "hpancakesk": "Helped come up with the original ideas behind Villager Bot",
+          "moody": "Helped with the ideas behind several items and fishing",
+          "elrynd": "Has helped with bug fixes and code understanding, and translated Villager Bot into French",
+          "cheeze": "Created new features and helps fix bugs",
+          "quack": "Helps fix minor issues with the code and translations",
+          "zelou": "Helps with the Spanish translation of Villager Bot",
+          "joaooh": "Created and maintains the Portuguese translation of Villager Bot",
+          "xe": "Minor bug fixes and feature additions",
+          "kaosj": "Minor bug fixes and feature additions",
+          "radar": "Minor bug fixes and feature additions"
+        },
+        "others": "And of course, the countless others who have contributed ideas and bug reports to help make Villager Bot better!"
       }
     },
     "econ": {
@@ -598,6 +617,7 @@
         "bot_2": "Bots don't have rights and can't have emeralds or stuff.",
         "s_emeralds": "{}'s emeralds",
         "total_wealth": "Net Wealth: {}{}",
+        "autistic_emeralds": "Mooderalds: {}{}",
         "pocket": "Pocket",
         "vault": "Vault"
       },
@@ -717,6 +737,11 @@
           "While looking for more emeralds, you misplaced yours, losing {}.",
           "An illusioner appears, rambling about doubling emeralds with this once simple trick. You hand him {} and he disappears in a puff of smoke.",
           "While begging in a village you got caught up in a raid, a ravager headbutts you across the map. You drop {} mid-flight."
+        ],
+        "mooderald": [
+          "You were blessed by Moofy, and magically received {}.",
+          "You prayed for Mooderalds, and found {} in your left pocket.",
+          "You found {} inside your bag with a note."
         ]
       },
       "mine": {
@@ -880,13 +905,15 @@
         "cmds": "Commands Sent",
         "votes": "Vote Streak",
         "fish": "Fishies Fished",
+        "mooderalds": "Mooderalds",
         "lb_ems": "{0}__**Emerald Leaderboard**__{0}",
         "lb_pil": "{0}__**Emeralds Stolen Leaderboard**__{0}",
         "lb_kil": "{0}__**Mobs Killed Leaderboard**__{0}",
         "lb_bee": "{0}__**Total Bees Leaderboard**__{0}",
         "lb_cmds": "{0}__**Commands Sent Leaderboard**__{0}",
         "lb_votes": "{0}__**Vote Streak Leaderboard**__{0}",
-        "lb_fish": "{0}__**Fish Fished Leaderboard**__{0}"
+        "lb_fish": "{0}__**Fish Fished Leaderboard**__{0}",
+        "lb_moods": "{0}__**Mooderald Leaderboard**__{0}"
       }
     }
   }
